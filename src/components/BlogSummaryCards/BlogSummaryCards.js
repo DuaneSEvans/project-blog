@@ -8,7 +8,7 @@ async function BlogSummaryCards() {
   return (
     <>
       {blogs.map(({ slug, ...delegated }) => {
-        return <BlogSummaryCard key={slug} {...delegated} />
+        return <BlogSummaryCard key={slug} slug={slug} {...delegated} />
       })}
     </>
   )
