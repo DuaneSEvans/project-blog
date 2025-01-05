@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc"
 import styles from "./postSlug.module.css"
 import { loadBlogPost } from "@/helpers/file-helpers"
 import { BLOG_TITLE } from "@/constants"
+import CodeSnippet from "@/components/CodeSnippet"
 
 export async function generateMetadata({ params }) {
   const { postSlug } = await params
@@ -26,7 +27,14 @@ async function BlogPost({ params }) {
     <article className={styles.wrapper}>
       <BlogHero title={title} publishedOn={publishedOn} />
       <div className={styles.page}>
-        <MDXRemote source={content}>{content}</MDXRemote>
+        <MDXRemote
+          components={{
+            pre: CodeSnippet,
+          }}
+          source={content}
+        >
+          {content}
+        </MDXRemote>
       </div>
     </article>
   )
