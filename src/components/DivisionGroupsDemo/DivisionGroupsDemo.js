@@ -14,18 +14,49 @@ function DivisionGroupsDemo({
   includeRemainderArea,
 }) {
   const id = React.useId()
-  const [numOfGroups, setNumOfGroups] = React.useState(initialNumOfGroups)
+  const items = range(numOfItems).map((i) => ({ id: `${id}${i}` }))
+  const calcGroups = (numOfGroups) => {
+    const numOfItemsPerGroup = Math.floor(numOfItems / numOfGroups)
+    const numOfRemainders = includeRemainderArea ? numOfItems % numOfGroups : 0
 
-  const numOfItemsPerGroup = Math.floor(numOfItems / numOfGroups)
+    const groups = range(numOfGroups).map((groupIndex) => {
+      return items.slice(
+        groupIndex * numOfItemsPerGroup,
+        (groupIndex + 1) * numOfItemsPerGroup
+      )
+    })
 
-  const remainder = includeRemainderArea ? numOfItems % numOfGroups : null
+    const remainder = includeRemainderArea
+      ? items.slice(numOfItems - numOfRemainders, numOfItems).reverse()
+      : []
+
+    return { groups, remainder }
+  }
+
+  const [groups, setGroups] = React.useState(
+    calcGroups(initialNumOfGroups, items.length).groups
+  )
+
+  const [remainders, setRemainders] = React.useState(
+    calcGroups(initialNumOfGroups, items.length).remainder
+  )
+
+  const handleSliderChange = (ev) => {
+    const newNumOfGroups = Number(ev.target.value)
+    const { groups: newGroups, remainder: newRemainders } = calcGroups(
+      newNumOfGroups,
+      items.length
+    )
+    setGroups(newGroups)
+    setRemainders(newRemainders)
+  }
 
   // When we're splitting into 1-3 groups, display side-by-side
   // columns. When we get to 4, it should switch to a 2x2 grid.
   const gridStructure =
-    numOfGroups < 4
+    groups.length < 4
       ? {
-          gridTemplateColumns: `repeat(${numOfGroups}, 1fr)`,
+          gridTemplateColumns: `repeat(${groups.length}, 1fr)`,
         }
       : {
           gridTemplateColumns: "1fr 1fr",
@@ -42,24 +73,24 @@ function DivisionGroupsDemo({
             step={1}
             min={1}
             max={4}
-            value={numOfGroups}
-            onChange={(ev) => setNumOfGroups(Number(ev.target.value))}
+            value={groups.length}
+            onChange={handleSliderChange}
           />
         </header>
 
         <div className={styles.demoWrapper}>
           <div className={clsx(styles.demoArea)} style={gridStructure}>
-            {range(numOfGroups).map((groupIndex) => (
+            {groups.map((group, groupIndex) => (
               <div key={groupIndex} className={styles.group}>
-                {range(numOfItemsPerGroup).map((index) => {
-                  const numOfPrevItems = groupIndex * numOfItemsPerGroup
-                  const layoutId = `${id}${numOfPrevItems + index}`
+                {group.map((item) => {
                   return (
                     <motion.div
-                      layoutId={layoutId}
-                      key={layoutId}
+                      layoutId={item.id}
+                      key={item.id}
                       className={styles.item}
-                    />
+                    >
+                      {item.id.split(id)[1]}
+                    </motion.div>
                   )
                 })}
               </div>
@@ -71,16 +102,24 @@ function DivisionGroupsDemo({
           <div className={styles.remainderArea}>
             <p className={styles.remainderHeading}>Remainder Area</p>
 
-            {range(remainder).map((index) => {
-              return <div key={index} className={styles.item} />
+            {remainders.map((item) => {
+              return (
+                <motion.div
+                  layoutId={item.id}
+                  key={item.id}
+                  className={styles.item}
+                >
+                  {item.id.split(id)[1]}
+                </motion.div>
+              )
             })}
           </div>
         )}
 
         <Equation
-          dividend={numOfItems}
-          divisor={numOfGroups}
-          remainder={remainder}
+          dividend={items.length}
+          divisor={groups.length}
+          remainder={remainders.length}
         />
       </Card>
     </LayoutGroup>
