@@ -6,6 +6,8 @@ import { LIGHT_TOKENS, DARK_TOKENS, BLOG_TITLE } from "@/constants"
 
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
+// this break for some reason
+//import RespectMotionPreference from "@/components/RespectMotionPreference"
 import "./styles.css"
 
 const mainFont = Work_Sans({
@@ -26,7 +28,7 @@ export const metadata = {
 }
 
 function RootLayout({ children }) {
-  // TODO: Dynamic theme depending on user preference
+  // TODO: Dynamic theme depending on user prefere  nce
   const theme = "light"
 
   return (
