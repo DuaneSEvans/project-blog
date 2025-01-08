@@ -7,6 +7,7 @@ import VisuallyHidden from "@/components/VisuallyHidden"
 import styles from "./Header.module.css"
 import { DARK_COLORS, LIGHT_COLORS } from "@/constants"
 import Cookies from "js-cookie"
+import Link from "next/link"
 
 function Header({ initialTheme, className, ...delegated }) {
   const [theme, setTheme] = React.useState(initialTheme)
@@ -33,7 +34,7 @@ function Header({ initialTheme, className, ...delegated }) {
       <Logo />
 
       <div className={styles.actions}>
-        <button className={styles.action}>
+        <Link className={styles.action} href="/rss.xml" target="blank">
           <Rss
             size="1.5rem"
             style={{
@@ -42,7 +43,7 @@ function Header({ initialTheme, className, ...delegated }) {
             }}
           />
           <VisuallyHidden>View RSS feed</VisuallyHidden>
-        </button>
+        </Link>
         <button onClick={handleChangeTheme} className={styles.action}>
           {theme === "light" ? <Sun size="1.5rem" /> : <Moon size="1.5rem" />}
           <VisuallyHidden>Toggle dark / light mode</VisuallyHidden>
