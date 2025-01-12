@@ -7,12 +7,20 @@ import { BLOG_TITLE } from "@/constants"
 import CodeSnippet from "@/components/CodeSnippet"
 import DivisionGroupsDemo from "@/components/DivisionGroupsDemo"
 import CircularColorsDemo from "@/components/CircularColorsDemo"
+import { notFound } from "next/navigation"
 
 export async function generateMetadata({ params }) {
   const { postSlug } = await params
+
+  const blogData = await loadBlogPost(postSlug)
+
+  if (!blogData) {
+    return null
+  }
+
   const {
     frontmatter: { title, abstract },
-  } = await loadBlogPost(postSlug)
+  } = blogData
   return {
     title,
     description: `${abstract} • ${BLOG_TITLE}`,
@@ -21,10 +29,17 @@ export async function generateMetadata({ params }) {
 
 async function BlogPost({ params }) {
   const { postSlug } = await params
+  const blogData = await loadBlogPost(postSlug)
+
+  if (!blogData) {
+    return notFound()
+  }
+
   const {
     frontmatter: { title, publishedOn },
     content,
-  } = await loadBlogPost(postSlug)
+  } = blogData
+
   return (
     <article className={styles.wrapper}>
       <BlogHero title={title} publishedOn={publishedOn} />
